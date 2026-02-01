@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2026-02-02
+  start_time: 2026-02-02 02:38:08
+  end_time: 2026-02-02 02:38:08
+  max_no_tables: 1
+  tables_available: 1
+  tables_reserved: 1
+
+two:
+  date: 2026-02-02
+  start_time: 2026-02-02 02:38:08
+  end_time: 2026-02-02 02:38:08
+  max_no_tables: 1
+  tables_available: 1
+  tables_reserved: 1

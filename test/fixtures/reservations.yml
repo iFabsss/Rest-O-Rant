@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  timeslot_x_table: one
+  people_num: 1
+  contact_name: MyString
+  contact_number: MyString
+  contact_email: MyString
+
+two:
+  user: two
+  timeslot_x_table: two
+  people_num: 1
+  contact_name: MyString
+  contact_number: MyString
+  contact_email: MyString

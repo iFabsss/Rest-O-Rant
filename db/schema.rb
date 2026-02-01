@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_182405) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_190935) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -49,6 +52,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_182405) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "reservations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "contact_email", null: false
+    t.string "contact_name", null: false
+    t.string "contact_number", null: false
+    t.datetime "created_at", null: false
+    t.integer "people_num", null: false
+    t.bigint "timeslot_x_table_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["timeslot_x_table_id"], name: "index_reservations_on_timeslot_x_table_id"
+    t.index ["user_id"], name: "index_reservations_on_user_id"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -56,6 +72,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_182405) do
     t.string "user_agent"
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "tables", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "max_people", null: false
+    t.integer "table_no", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "timeslot_x_tables", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "status", default: "available", null: false
+    t.bigint "table_id", null: false
+    t.uuid "timeslot_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_id"], name: "index_timeslot_x_tables_on_table_id"
+    t.index ["timeslot_id", "table_id"], name: "index_timeslot_x_tables_on_timeslot_id_and_table_id", unique: true
+    t.index ["timeslot_id"], name: "index_timeslot_x_tables_on_timeslot_id"
+  end
+
+  create_table "timeslots", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.time "end_time", null: false
+    t.integer "max_no_tables", null: false
+    t.time "start_time", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -69,5 +112,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_182405) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "reservations", "timeslot_x_tables"
+  add_foreign_key "reservations", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "timeslot_x_tables", "tables"
+  add_foreign_key "timeslot_x_tables", "timeslots"
 end
