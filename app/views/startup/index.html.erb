@@ -1,2 +1,47 @@
-<h1>Startup#index</h1>
-<p>Find me in app/views/startup/index.html.erb</p>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Rest-O-Rant" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Rest O Rant">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <h1>Welcome to Rest-O-Rant</h1>
+    <h2>A place to rest, enjoy your food, and rant your problems away!</h2>
+    <button>Get started</button>
+
+    <div id="login-form">
+        <%= form_with url: sessions_path, local: true do |form| %>
+          <div>
+            <%= form.label :email_address, "Email Address" %>
+            <%= form.email_field :email_address, required: true %>
+          </div>
+          <div>
+            <%= form.label :password, "Password" %>
+            <%= form.password_field :password, required: true %>
+          </div>
+          <div>
+            <%= form.submit "Sign In" %>
+          </div>
+        <% end %>
+    </div>
+  </body>
+</html>
