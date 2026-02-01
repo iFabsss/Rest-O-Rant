@@ -1,11 +1,15 @@
 Rails.application.routes.draw do
-  get "admin/index"
+  resource :session
+  resources :passwords, param: :token
+
+  resources :users, only: [ :new, :create ]
+
+  get "/admin", to: "admin#index"
   get "admin/reservations"
   get "admin/timeslots"
   get "admin/tables"
-  resource :session
-  resources :passwords, param: :token
-  get "home/index"
+
+  get "/home", to: "home#index"
   get "home/reserve"
   get "home/confirm"
   get "home/reservations"

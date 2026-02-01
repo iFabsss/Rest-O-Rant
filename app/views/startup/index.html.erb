@@ -26,22 +26,116 @@
   <body>
     <h1>Welcome to Rest-O-Rant</h1>
     <h2>A place to rest, enjoy your food, and rant your problems away!</h2>
-    <button>Get started</button>
+    <button id="open-auth-modal"
+            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded mt-4">
+      Get Started
+    </button>
 
-    <div id="login-form">
-        <%= form_with url: sessions_path, local: true do |form| %>
-          <div>
-            <%= form.label :email_address, "Email Address" %>
-            <%= form.email_field :email_address, required: true %>
-          </div>
-          <div>
-            <%= form.label :password, "Password" %>
-            <%= form.password_field :password, required: true %>
-          </div>
-          <div>
-            <%= form.submit "Sign In" %>
-          </div>
-        <% end %>
+    <!-- Auth Modal -->
+    <div id="auth-modal"
+        class="fixed inset-0 hidden items-center justify-center z-50">
+
+        <div class="fixed inset-0 bg-black opacity-50"></div>
+
+        <div class="bg-white rounded-lg p-6 w-full max-w-md relative shadow-lg">
+            <button id="close-auth-modal"
+                    class="absolute top-2 right-3 text-gray-500 text-xl font-bold hover:text-red-400 cursor-pointer">
+            &times;
+            </button>
+
+            <h2 class="text-2xl font-bold mb-4 text-center">Welcome to Shapi</h2>
+
+            <!-- Tabs -->
+            <div class="flex justify-center mb-4 space-x-4">
+            <button id="login-tab" class="font-bold border-b-2 border-blue-500">Login</button>
+            <button id="signup-tab" class="text-gray-500">Sign Up</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <div id="login-form">
+
+            <%= form_with url: session_path, method: :post, data: { turbo: false } do |f| %>
+
+                <% if flash.now[:login_errors] %>
+                <div class="bg-red-100 text-red-500 border border-red-300 px-3 py-2 rounded mb-3 text-sm">
+                    <%= flash.now[:login_errors] %>
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                    const authModal = document.getElementById("auth-modal");
+                    authModal.classList.remove("hidden");
+                    authModal.classList.add("flex");
+                    });
+                </script>
+                <% end %>
+
+                <div class="mb-3">
+                <%= f.label :email_address, "Email", class: "block" %>
+                <%= f.email_field :email_address, placeholder: "Enter your email", class: "w-full border rounded px-2 py-1" %>
+                </div>
+
+                <div class="mb-3">
+                <%= f.label :password, class: "block" %>
+                <%= f.password_field :password, placeholder: "Enter your password", class: "w-full border rounded px-2 py-1" %>
+                </div>
+
+                <%= f.submit "Log In",
+                    class: "w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded" %>
+            <% end %>
+
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div id="signup-form" class="hidden">
+
+            <%= form_with model: User.new, url: users_path, method: :post, data: { turbo: false } do |f| %>
+
+                <% if flash.now[:signup_errors] %>
+                <div class="bg-red-100 text-red-500 border border-red-300 px-3 py-2 rounded mb-3 text-sm">
+                    <%= flash.now[:signup_errors] %>
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                    const authModal = document.getElementById("auth-modal");
+                    authModal.classList.remove("hidden");
+                    authModal.classList.add("flex");
+
+                    loginTab = document.getElementById("login-tab");
+                    signupTab = document.getElementById("signup-tab");
+                    signupTab.classList.add("border-b-2", "border-blue-500", "font-bold");
+                    loginTab.classList.remove("border-b-2", "border-blue-500", "font-bold");
+
+                    const loginForm = document.getElementById("login-form");
+                    const signupForm = document.getElementById("signup-form");
+                    loginForm.classList.add("hidden");
+                    signupForm.classList.remove("hidden");
+                    });
+                </script>
+                <% end %>
+
+                <div class="mb-3">
+                <%= f.label :email_address, class: "block" %>
+                <%= f.email_field :email_address, placeholder: "Enter your email", class: "w-full border rounded px-2 py-1" %>
+                </div>
+
+                <div class="mb-3">
+                <%= f.label :password, class: "block" %>
+                <%= f.password_field :password, placeholder: "Enter your password", class: "w-full border rounded px-2 py-1" %>
+                </div>
+
+                <div class="mb-3">
+                <%= f.label :password_confirmation, class: "block" %>
+                <%= f.password_field :password_confirmation, placeholder: "Confirm your password", class: "w-full border rounded px-2 py-1" %>
+                </div>
+
+                <%= f.submit "Create Account",
+                    class: "w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded" %>
+            <% end %>
+
+            </div>
+        </div>
     </div>
   </body>
 </html>
