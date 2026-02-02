@@ -1,19 +1,63 @@
-<%= form_with url: 'home/reserve', method: :post do |f| %>
-  <%= hidden_field_tag :timeslot_x_table_id, @timeslot_x_table_id %>
+<div class="min-w-6/12 p-6 bg-white rounded-2xl shadow-lg border border-neutral-200">
+  <h1 class="text-2xl font-bold mb-6 text-center text-heading">Confirm Your Reservation</h1>
+
+    
 
   <% if @timeslot_x_table %>
-    <p>
-      Selected Timeslot: <%= @timeslot_x_table.timeslot.start_time %> - <%= @timeslot_x_table.timeslot.end_time %>
-      Table: <%= @timeslot_x_table.table.table_no %>
-    </p>
+    <!-- Timeslot & Table Info -->
+    <div class="mb-6 p-4 bg-neutral-50 rounded-xl border border-neutral-200">
+      <h2 class="text-lg font-semibold mb-2">Selected Table & Timeslot</h2>
+      <div class="flex justify-between text-sm text-neutral-700 mb-1">
+        <span>Table:</span>
+        <span class="font-medium">#<%= @table_no %> (Max <%= @max_people %> people)</span>
+      </div>
+      <div class="flex justify-between text-sm text-neutral-700 mb-1">
+        <span>Date:</span>
+        <span class="font-medium"><%= @date.strftime("%B %d, %Y") %></span>
+      </div>
+      <div class="flex justify-between text-sm text-neutral-700">
+        <span>Time:</span>
+        <span class="font-medium"><%= @start_time.strftime("%I:%M %p") %> - <%= @end_time.strftime("%I:%M %p") %></span>
+      </div>
+    </div>
+  <% else %>
+    <p class="text-red-500 mb-4">No table selected.</p>
   <% end %>
 
-  <div>
-    <%= f.label :people_num, "Number of People" %>
-    <%= f.number_field :people_num, min: 1, max: @timeslot_x_table.table.max_people %>
-  </div>
+  <% if flash[:alert] %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <span class="block sm:inline"><%= flash[:alert] %></span>
+      </div>
+    <% end %>
 
-  <div>
-    <%= f.submit "Confirm Reservation" %>
-  </div>
-<% end %>
+  <!-- Reservation Form -->
+  <%= form_with url: home_confirm_path, method: :post, local: false, class: "space-y-4" do |f| %>
+    <%= hidden_field_tag :timeslot_x_table_id, @timeslot_x_table_id %>
+
+    
+
+    <div>
+      <%= f.label :people_num, "Number of People", class: "block text-sm font-medium mb-1" %>
+      <%= f.number_field :people_num, min: 1, max: @max_people, class: "w-full border border-neutral-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand" %>
+    </div>
+
+    <div>
+      <%= f.label :contact_name, "Contact Name", class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :contact_name, class: "w-full border border-neutral-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand" %>
+    </div>
+
+    <div>
+      <%= f.label :contact_email, "Contact Email", class: "block text-sm font-medium mb-1" %>
+      <%= f.email_field :contact_email, value: current_user&.email_address, class: "w-full border border-neutral-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand" %>
+    </div>
+
+    <div>
+      <%= f.label :contact_number, "Contact Number", class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :contact_number, class: "w-full border border-neutral-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand" %>
+    </div>
+
+    <div class="text-center mt-6">
+      <%= f.submit "Confirm Reservation", class: "bg-blue-400 text-black px-6 py-2 rounded-xl font-semibold hover:bg-blue-300 transition cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

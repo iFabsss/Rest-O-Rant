@@ -117,7 +117,7 @@ window.getTimeslot = function (date) {
         slot.innerHTML = `
           <div class="flex justify-between items-center mb-2">
             <span class="font-medium">
-              ${timeslot.start_time} – ${timeslot.end_time}
+              ${formatTime12hr(timeslot.start_time)} – ${formatTime12hr(timeslot.end_time)}
             </span>
             <span class="text-xs text-neutral-500">
               ${availableTables.length} tables available
@@ -150,6 +150,14 @@ window.getTimeslot = function (date) {
 }
 
 window.selectTable = function (timeslot_x_table_id) {
-  window.location.href = `/home/reserve?timeslot_x_table_id=${timeslot_x_table_id}`;
+    console.log("Selected TimeslotXTable ID:", timeslot_x_table_id);
+    window.location.href = `/home/reserve?timeslot_x_table_id=${timeslot_x_table_id}`;
 }
 
+function formatTime12hr(time24) {
+  const [hourStr, minute] = time24.split(":");
+  let hour = parseInt(hourStr);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12 || 12; // convert 0 => 12
+  return `${hour}:${minute} ${ampm}`;
+}

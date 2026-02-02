@@ -1,2 +1,41 @@
-<h1>Home#reservations</h1>
-<p>Find me in app/views/home/reservations.html.erb</p>
+<div class="max-w-10/12 w-full p-6 bg-white rounded-2xl shadow-lg border border-neutral-200">
+  <h1 class="text-2xl font-bold mb-6 text-center text-heading">My Reservations</h1>
+
+  <% if @reservations.any? %>
+    <div class="space-y-4">
+      <% @reservations.each do |res| %>
+        <% timeslot = res.timeslot_x_table.timeslot %>
+        <% table = res.timeslot_x_table.table %>
+        <div class="border rounded-xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center bg-neutral-50 hover:bg-white transition shadow-sm">
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm text-neutral-500">Date</div>
+            <div class="font-medium"><%= timeslot.date.strftime("%B %d, %Y") %></div>
+          </div>
+
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm text-neutral-500">Time</div>
+            <div class="font-medium">
+              <%= timeslot.start_time.strftime("%I:%M %p") %> - <%= timeslot.end_time.strftime("%I:%M %p") %>
+            </div>
+          </div>
+
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm text-neutral-500">Table</div>
+            <div class="font-medium">#<%= table.table_no %> (Max <%= table.max_people %>p)</div>
+          </div>
+
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm text-neutral-500">People</div>
+            <div class="font-medium"><%= res.people_num %></div>
+          </div>
+
+          <div class="flex space-x-2 mt-2 md:mt-0">
+            <%= button_to "Cancel", home_cancel_reservation_path(res), method: :delete, data: { confirm: "Are you sure?" }, class: "px-3 py-1 text-xs rounded-full border border-red-400 text-red-600 hover:bg-red-50 transition" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center text-neutral-500">You have no reservations yet.</p>
+  <% end %>
+</div>

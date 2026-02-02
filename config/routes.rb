@@ -11,8 +11,11 @@ Rails.application.routes.draw do
 
   get "/home", to: "home#index"
   get "home/reserve"
-  get "home/confirm"
-  get "home/reservations"
+  post "home/confirm", to: "home#confirm", as: "home_confirm"
+
+  get "home/reservations", to: "home#reservations", as: "home_reservations"
+  delete "home/reservations/:id", to: "home#cancel_reservation", as: "home_cancel_reservation"
+
   root "startup#index"
 
 
