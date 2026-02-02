@@ -24,7 +24,12 @@ Rails.application.routes.draw do
 
 
 
-  get "admin/tables", to: "admin#tables", as: "admin_tables"
+  get    "admin/tables", to: "admin#tables", as: "admin_tables"
+  get "admin/tables/list", to: "admin#list_tables", as: "admin_list_tables"
+  post   "admin/tables", to: "admin#create_table", as: "admin_create_table"
+  patch  "admin/tables/:id", to: "admin#update_table", as: "admin_update_table"
+  delete "admin/tables/:id", to: "admin#delete_table", as: "admin_delete_table"
+
 
 
 

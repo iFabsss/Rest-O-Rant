@@ -133,10 +133,44 @@ class AdminController < ApplicationController
   end
 
 
+  # GET /admin/tables
   def tables
+    @tables = Table.order(:table_no)
   end
 
+  def list_tables
+    tables = Table.order(:table_no)
+    render json: tables.map { |t|
+      { id: t.id, table_no: t.table_no, max_people: t.max_people }
+    }
+  end
 
+  # POST /admin/tables
+  def create_table
+    table = Table.new(table_params)
+    if table.save
+      render json: { success: true, table: table }
+    else
+      render json: { success: false, errors: table.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH /admin/tables/:id
+  def update_table
+    table = Table.find(params[:id])
+    if table.update(table_params)
+      render json: { success: true, table: table }
+    else
+      render json: { success: false, errors: table.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /admin/tables/:id
+  def delete_table
+    table = Table.find(params[:id])
+    table.destroy
+    render json: { success: true }
+  end
 
   private
   def require_admin
@@ -151,5 +185,9 @@ class AdminController < ApplicationController
 
   def timeslot_params
     params.require(:timeslot).permit(:date, :start_time, :end_time, :max_no_tables)
+  end
+
+  def table_params
+    params.require(:table).permit(:table_no, :max_people)
   end
 end

@@ -1,2 +1,24 @@
-<h1>Admin#tables</h1>
-<p>Find me in app/views/admin/tables.html.erb</p>
+<div class="max-w-8xl mx-auto p-6 bg-white rounded-2xl shadow-lg border border-neutral-200">
+  <h1 class="text-2xl font-bold mb-6 text-center text-black">Manage Tables</h1>
+
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-lg font-semibold text-black">All Tables</h2>
+    <button onclick="openTablesModal()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+      Add / Manage Tables
+    </button>
+  </div>
+
+  <% if @tables.any? %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <% @tables.each do |table| %>
+        <div class="border border-gray-400 text-gray-800 rounded-xl p-4 bg-neutral-50 flex justify-between items-center hover:bg-neutral-100 transition">
+          <div>
+            <span class="font-bold">#<%= table.table_no %></span> - Max <%= table.max_people %>p
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-neutral-500 text-center">No tables added yet.</p>
+  <% end %>
+</div>

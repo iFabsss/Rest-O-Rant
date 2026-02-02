@@ -509,3 +509,140 @@ window.removeTableFromTimeslot = function(timeslotId, tableId) {
     body: JSON.stringify({ table_id: tableId })
   }).then(() => location.reload())
 }
+
+
+window.openTablesModal = function() {
+  fetch("/admin/tables/list")  // Changed from /admin/tables
+    .then(res => res.json())
+    .then(data => {
+      const overlay = document.createElement("div")
+      overlay.className = "fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      
+      overlay.innerHTML = `
+        <div class="bg-white p-6 rounded-xl w-96 max-h-[80vh] overflow-y-auto">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-black">Tables</h2>
+            <button id="closeTablesModal" class="text-neutral-400 hover:text-black text-2xl leading-none">&times;</button>
+          </div>
+
+          <div id="tablesList" class="space-y-2 mb-4">
+            ${data.map(table => `
+              <div class="flex justify-between items-center border p-2 rounded text-gray-800" data-id="${table.id}">
+                <div>
+                  <span class="font-bold">#${table.table_no}</span> - Max ${table.max_people}p
+                </div>
+                <div class="space-x-1">
+                  <button class="editTable text-blue-500 text-sm">Edit</button>
+                  <button class="deleteTable text-red-500 text-sm">Delete</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <h3 class="font-bold mb-2 text-gray-800">Add New Table</h3>
+          <form id="addTableForm" class="space-y-2">
+            <input type="number" name="table_no" placeholder="Table Number" required class="w-full border p-2 rounded text-gray-800">
+            <input type="number" name="max_people" placeholder="Max People" required class="w-full border p-2 rounded text-gray-800">
+            <button class="w-full bg-green-500 text-white py-2 rounded">Add Table</button>
+          </form>
+        </div>
+      `
+
+      document.body.appendChild(overlay)
+
+      // Close
+      overlay.querySelector("#closeTablesModal").onclick = () => overlay.remove()
+
+      // Add table
+      overlay.querySelector("#addTableForm").onsubmit = async e => {
+        e.preventDefault()
+        const fd = new FormData(e.target)
+        
+        const data = {
+          table: {
+            table_no: fd.get('table_no'),
+            max_people: fd.get('max_people')
+          }
+        }
+        
+        try {
+          const response = await fetch("/admin/tables", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+              "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            }
+          })
+          const res = await response.json()
+          if(res.success) location.reload()
+          else alert(res.errors.join("\n"))
+        } catch(error) {
+          console.error('Error:', error)
+          alert('Failed to create table')
+        }
+      }
+
+      // Edit table
+      overlay.querySelectorAll(".editTable").forEach(btn => {
+        btn.onclick = e => {
+          const row = e.target.closest("[data-id]")
+          const id = row.dataset.id
+          const tableNo = row.querySelector("span").textContent.replace("#","")
+          const maxPeople = row.textContent.match(/Max (\d+)p/)[1]
+
+          row.innerHTML = `
+            <input type="number" value="${tableNo}" class="border p-1 w-1/3 mr-2 text-gray-800">
+            <input type="number" value="${maxPeople}" class="border p-1 w-1/3 mr-2 text-gray-800">
+            <button class="saveTable text-green-500 text-sm">Save</button>
+            <button class="cancelEdit text-gray-500 text-sm">Cancel</button>
+          `
+
+          row.querySelector(".saveTable").onclick = async () => {
+            const inputs = row.querySelectorAll("input")
+            const data = {
+              table: {
+                table_no: inputs[0].value,
+                max_people: inputs[1].value
+              }
+            }
+
+            try {
+              const response = await fetch(`/admin/tables/${id}`, {
+                method: "PATCH",
+                body: JSON.stringify(data),
+                headers: {
+                  "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+                }
+              })
+              const res = await response.json()
+              if(res.success) location.reload()
+              else alert(res.errors.join("\n"))
+            } catch(error) {
+              console.error('Error:', error)
+              alert('Failed to update table')
+            }
+          }
+
+          row.querySelector(".cancelEdit").onclick = () => location.reload()
+        }
+      })
+
+      // Delete table
+      overlay.querySelectorAll(".deleteTable").forEach(btn => {
+        btn.onclick = e => {
+          const id = e.target.closest("[data-id]").dataset.id
+          if(!confirm("Are you sure?")) return
+          fetch(`/admin/tables/${id}`, {
+            method: "DELETE",
+            headers: {
+              "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+            }
+          }).then(() => location.reload())
+        }
+      })
+    })
+}
