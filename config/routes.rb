@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
-
+  resources :timeslots, only: [ :index, :create, :destroy ]
   resources :users, only: [ :new, :create ]
 
   get "/admin", to: "admin#index"

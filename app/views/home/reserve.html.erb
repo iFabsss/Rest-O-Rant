@@ -1,2 +1,19 @@
-<h1>Home#reserve</h1>
-<p>Find me in app/views/home/reserve.html.erb</p>
+<%= form_with url: 'home/reserve', method: :post do |f| %>
+  <%= hidden_field_tag :timeslot_x_table_id, @timeslot_x_table_id %>
+
+  <% if @timeslot_x_table %>
+    <p>
+      Selected Timeslot: <%= @timeslot_x_table.timeslot.start_time %> - <%= @timeslot_x_table.timeslot.end_time %>
+      Table: <%= @timeslot_x_table.table.table_no %>
+    </p>
+  <% end %>
+
+  <div>
+    <%= f.label :people_num, "Number of People" %>
+    <%= f.number_field :people_num, min: 1, max: @timeslot_x_table.table.max_people %>
+  </div>
+
+  <div>
+    <%= f.submit "Confirm Reservation" %>
+  </div>
+<% end %>
