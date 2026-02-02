@@ -1,2 +1,10 @@
-<h1>Admin#index</h1>
-<p>Find me in app/views/admin/index.html.erb</p>
+<div class="bg-neutral-primary min-h-full">
+  <div class="flex flex-col justify-center items-center space-y-4 p-6">
+    <h1 class="text-3xl font-bold text-brand">Admin Dashboard</h1>
+    <h2 class="text-xl font-semibold">Reservations & Timeslots Overview</h2>
+    
+    <%= month_calendar(attribute: :date, partial: 'admin/admin_month_calendar') do |date| %>
+      <%= date %>
+    <% end %>
+  </div>
+</div>
