@@ -5,9 +5,28 @@ Rails.application.routes.draw do
   resources :users, only: [ :new, :create ]
 
   get "/admin", to: "admin#index"
-  get "admin/reservations"
-  get "admin/timeslots"
-  get "admin/tables"
+
+  get "admin/reservations", to: "admin#reservations", as: "admin_reservations"
+  get "admin/reservations/:id", to: "admin#show_reservation", as: "admin_show_reservation"
+  patch "admin/reservations/:id", to: "admin#update_reservation", as: "admin_update_reservation"
+  delete "admin/reservations/:id", to: "admin#cancel_reservation", as: "admin_cancel_reservation"
+
+  get "admin/timeslots", to: "admin#timeslots", as: "admin_timeslots"
+  get    "admin/timeslots/:id", to: "admin#show_timeslot",   as: "admin_show_timeslot"
+  post   "admin/timeslots",     to: "admin#create_timeslot", as: "admin_create_timeslot"
+  patch  "admin/timeslots/:id", to: "admin#update_timeslot", as: "admin_update_timeslot"
+  delete "admin/timeslots/:id", to: "admin#delete_timeslot", as: "admin_delete_timeslot"
+
+  post   "admin/timeslots/:id/add_table", to: "admin#add_table_to_timeslot", as: "admin_add_table_to_timeslot"
+  delete "admin/timeslots/:id/remove_table/:table_id",
+        to: "admin#remove_table_from_timeslot",
+        as: "admin_remove_table_from_timeslot"
+
+
+
+  get "admin/tables", to: "admin#tables", as: "admin_tables"
+
+
 
   get "/home", to: "home#index"
   get "home/reserve"

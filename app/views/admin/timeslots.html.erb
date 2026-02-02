@@ -1,2 +1,32 @@
-<h1>Admin#timeslots</h1>
-<p>Find me in app/views/admin/timeslots.html.erb</p>
+<div class="min-w-1/2 p-6 bg-white rounded-2xl shadow border">
+  <div class="flex justify-between mb-4">
+    <h1 class="text-2xl font-bold text-black">Timeslots</h1>
+    <button onclick="openCreateTimeslot()"
+      class="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-400">
+      + Add Timeslot
+    </button>
+  </div>
+
+  <div class="space-y-3">
+    <% @timeslots.each do |t| %>
+      <div
+        onclick="openTimeslotDetails('<%= t.id %>')"
+        class="cursor-pointer border rounded-xl p-4 flex justify-between bg-neutral-50 hover:bg-neutral-100">
+
+        <div>
+          <div class="font-semibold text-gray-800"><%= t.date.strftime("%B %d, %Y") %></div>
+          <div class="text-sm text-neutral-600">
+            <%= t.start_time.strftime("%I:%M %p") %> –
+            <%= t.end_time.strftime("%I:%M %p") %>
+          </div>
+        </div>
+
+        <button
+          onclick="event.stopPropagation(); deleteTimeslot('<%= t.id %>')"
+          class="text-red-500 text-sm hover:underline">
+          Delete
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>

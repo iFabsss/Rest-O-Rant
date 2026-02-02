@@ -75,12 +75,6 @@ class HomeController < ApplicationController
     end
   end
 
-  def require_admin
-    unless current_user&.is_admin?
-      render plain: "Forbidden", status: :forbidden
-    end
-  end
-
   def reservation_params
     params.permit(:timeslot_x_table_id, :people_num, :contact_name, :contact_number, :contact_email)
   end

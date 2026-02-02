@@ -1,2 +1,41 @@
-<h1>Admin#reservations</h1>
-<p>Find me in app/views/admin/reservations.html.erb</p>
+<div class="max-w-10/12 w-full p-6 bg-white rounded-2xl shadow-lg border border-neutral-200">
+  <h1 class="text-2xl font-bold mb-6 text-center text-heading text-black">Restaurant Reservations</h1>
+
+  <% if @reservations.any? %>
+    <div class="space-y-4">
+      <% @reservations.each do |res| %>
+        <% timeslot = res.timeslot_x_table.timeslot %>
+        <% table = res.timeslot_x_table.table %>
+        <div class="border rounded-xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center bg-neutral-50 hover:bg-gray-300 transition shadow-sm" onclick="openReservationDetails('<%= res.id %>')" style="cursor: pointer;">
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm font-bold text-black">Date</div>
+            <div class="font-medium text-gray-800"><%= timeslot.date.strftime("%B %d, %Y") %></div>
+          </div>
+
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm font-bold text-black">Time</div>
+            <div class="font-medium text-gray-800">
+              <%= timeslot.start_time.strftime("%I:%M %p") %> - <%= timeslot.end_time.strftime("%I:%M %p") %>
+            </div>
+          </div>
+
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm font-bold text-black">Table</div>
+            <div class="font-medium text-gray-800">#<%= table.table_no %> (Max <%= table.max_people %>p)</div>
+          </div>
+
+          <div class="mb-2 md:mb-0">
+            <div class="text-sm font-bold text-black">People</div>
+            <div class="font-medium text-gray-800"><%= res.people_num %></div>
+          </div>
+
+          <div class="flex space-x-2 mt-2 md:mt-0">
+            <%= button_to "Cancel", admin_cancel_reservation_path(res), method: :delete, data: { confirm: "Are you sure?" }, class: "px-3 py-1 text-xs rounded-full border border-red-400 text-red-600 hover:bg-red-50 transition" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center text-neutral-500">You have no reservations yet.</p>
+  <% end %>
+</div>
