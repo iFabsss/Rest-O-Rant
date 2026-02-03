@@ -52,14 +52,12 @@ tables = []
 end
 puts "Created 5 tables."
 
-# --- Create timeslots ---
 puts "Creating timeslots for 7 days..."
 timeslots = []
 
 start_date = Date.today
-end_date = start_date + 6  # 7 days
+end_date = start_date + 6 
 
-# Example time slots: 18:00, 19:00, 20:00
 slot_times = [ "18:00", "19:00", "20:00" ]
 
 (start_date..end_date).each do |date|
@@ -78,7 +76,6 @@ end
 
 puts "Created #{timeslots.count} timeslots for 7 days."
 
-# --- Create timeslot_x_tables (availability) ---
 puts "Creating Timeslot_X_Tables..."
 timeslot_x_tables = []
 
@@ -94,7 +91,6 @@ end
 
 puts "Created #{timeslot_x_tables.count} Timeslot_X_Tables."
 
-# --- Optional: Create a sample reservation ---
 puts "Creating a sample reservation..."
 sample_slot_table = timeslot_x_tables.first
 Reservation.create!(

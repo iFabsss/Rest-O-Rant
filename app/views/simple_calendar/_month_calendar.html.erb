@@ -1,5 +1,4 @@
 <div class="simple-calendar max-w-7xl mx-auto bg-white rounded-2xl shadow-md border border-neutral-200 p-6">
-  <!-- Header -->
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
     <time
       datetime="<%= start_date.strftime('%Y-%m') %>"
@@ -22,7 +21,6 @@
     </nav>
   </div>
 
-  <!-- Calendar Table -->
   <div class="overflow-x-auto">
     <table class="w-full table-fixed border-separate border-spacing-2">
       <thead>
@@ -43,15 +41,27 @@
                 is_past = day < Date.current
                 is_today = day == Date.current
                 
-                has_user_reservation = current_user && current_user.reservations.joins(timeslot_x_table: :timeslot).where(timeslots: { date: day }).exists?
-                
                 has_available_slots = TimeslotXTable.joins(:timeslot).where(timeslots: { date: day }, status: 'available').exists?
+
+                user_reservations = current_user ? current_user.reservations.joins(timeslot_x_table: :timeslot).where(timeslots: { date: day }) : []
+                has_user_reservation = user_reservations.exists?
+
+                user_reservation_info = if current_user
+                  current_user.reservations
+                    .joins(timeslot_x_table: [:timeslot, :table])
+                    .where(timeslots: { date: day })
+                    .map { |res| { time: res.timeslot_x_table.timeslot.start_time.strftime("%H:%M"), table_no: res.timeslot_x_table.table.table_no } }
+                else
+                  []
+                end
+
+                has_user_reservation = user_reservation_info.any?
               %>
               
               <%= content_tag :td, class: "h-full align-middle" do %>
                 <div 
                   data-date="<%= day.iso8601 %>"
-                  onclick="getTimeslot(this.dataset.date)"
+                  onclick="getTimeslot(this.dataset.date, <%= user_reservation_info.to_json %>)"
                   class="
                   h-full rounded-xl p-3 border hover:bg-amber-200 transition cursor-pointer
                   <%= 'bg-brand/10 border-brand' if is_today && !has_user_reservation %>

@@ -21,19 +21,16 @@ function initAuthModal() {
 
     if (!modal || !openBtn) return;
 
-    // Open modal
     openBtn.addEventListener("click", () => {
         modal.classList.remove("hidden");
         modal.classList.add("flex");
     });
 
-    // Close modal
     closeBtn.addEventListener("click", () => {
         modal.classList.add("hidden");
         modal.classList.remove("flex");
     });
 
-    // Tabs
     loginTab.addEventListener("click", () => {
         loginForm.classList.remove("hidden");
         signupForm.classList.add("hidden");
@@ -51,8 +48,7 @@ function initAuthModal() {
     });
 }
 
-window.getTimeslot = function (date) {
-  // Remove existing modal if open
+window.getTimeslot = function (date, userReservationInfo){
   const existing = document.getElementById("timeslots-overlay")
   if (existing) existing.remove()
 
@@ -106,13 +102,11 @@ window.getTimeslot = function (date) {
       }
 
       timeslots.forEach(timeslot => {
-        const availableTables = timeslot.tables.filter(
-          t => t.status === "available"
-        )
+        const availableTables = timeslot.tables
 
         const slot = document.createElement("div")
         slot.className =
-          "border rounded-xl p-4 mb-3 hover:border-brand hover:bg-brand/5 transition"
+          `border rounded-xl p-4 mb-3 hover:border-brand hover:bg-brand/5 transition`
 
         slot.innerHTML = `
           <div class="flex justify-between items-center mb-2">
@@ -126,17 +120,41 @@ window.getTimeslot = function (date) {
 
           <div class="flex flex-wrap gap-2">
             ${availableTables.map(table => `
-              <button
+              <button id="select-table-btn-${table.timeslot_x_table_id}"
                 class="px-3 py-1 text-xs rounded-full border border-neutral-300
                        hover:border-brand hover:bg-black/10 transition cursor-pointer"
                 onclick="selectTable(${table.timeslot_x_table_id})"
               >
-                Table ${table.table_no} (${table.max_people}p)
-              </button>
-            `).join("")}
-          </div>
-        `
+                  Table ${table.table_no} (${table.max_people}p)
+                </button>
+              `).join("")
+            }
+            </div>
+          `
+        
+        console.log("User Reservation Info:", userReservationInfo);
 
+        slot.querySelectorAll("button").forEach(btn => {
+          const tableNo = parseInt(btn.textContent.match(/Table (\d+)/)[1])
+          const tableStatus = availableTables.find(t => t.table_no === tableNo).status;
+
+          console.log("Checking table number:", tableNo);
+
+          const isReservedByUser = userReservationInfo.some(
+            r => r.time === timeslot.start_time && r.table_no === tableNo
+          )
+
+          if (isReservedByUser) {
+            btn.disabled = true
+            btn.classList.remove("cursor-pointer")
+            btn.classList.add("cursor-not-allowed", "opacity-50", "bg-purple-100", "border-purple-300")
+          } else if (tableStatus === "reserved") {
+            btn.disabled = true
+            btn.classList.remove("cursor-pointer")
+            btn.classList.add("cursor-not-allowed", "opacity-50", "bg-red-50", "border-red-300")
+          }
+        })
+        
         timeslotsCard.appendChild(slot)
       })
     })
@@ -158,7 +176,7 @@ function formatTime12hr(time24) {
   const [hourStr, minute] = time24.split(":");
   let hour = parseInt(hourStr);
   const ampm = hour >= 12 ? "PM" : "AM";
-  hour = hour % 12 || 12; // convert 0 => 12
+  hour = hour % 12 || 12;
   return `${hour}:${minute} ${ampm}`;
 }
 
@@ -434,7 +452,6 @@ window.openCreateTimeslot = function() {
     e.preventDefault()
     const fd = new FormData(e.target)
     
-    // Convert FormData to JSON object
     const data = {
       timeslot: {
         date: fd.get('date'),
@@ -512,7 +529,7 @@ window.removeTableFromTimeslot = function(timeslotId, tableId) {
 
 
 window.openTablesModal = function() {
-  fetch("/admin/tables/list")  // Changed from /admin/tables
+  fetch("/admin/tables/list")
     .then(res => res.json())
     .then(data => {
       const overlay = document.createElement("div")
@@ -550,10 +567,8 @@ window.openTablesModal = function() {
 
       document.body.appendChild(overlay)
 
-      // Close
       overlay.querySelector("#closeTablesModal").onclick = () => overlay.remove()
 
-      // Add table
       overlay.querySelector("#addTableForm").onsubmit = async e => {
         e.preventDefault()
         const fd = new FormData(e.target)
@@ -584,7 +599,6 @@ window.openTablesModal = function() {
         }
       }
 
-      // Edit table
       overlay.querySelectorAll(".editTable").forEach(btn => {
         btn.onclick = e => {
           const row = e.target.closest("[data-id]")
@@ -631,7 +645,6 @@ window.openTablesModal = function() {
         }
       })
 
-      // Delete table
       overlay.querySelectorAll(".deleteTable").forEach(btn => {
         btn.onclick = e => {
           const id = e.target.closest("[data-id]").dataset.id

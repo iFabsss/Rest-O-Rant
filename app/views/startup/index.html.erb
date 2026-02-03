@@ -31,7 +31,6 @@
       Get Started
     </button>
 
-    <!-- Auth Modal -->
     <div id="auth-modal"
         class="fixed inset-0 hidden items-center justify-center z-50">
 
@@ -45,13 +44,11 @@
 
             <h2 class="text-2xl font-bold mb-4 text-center">Welcome to Shapi</h2>
 
-            <!-- Tabs -->
             <div class="flex justify-center mb-4 space-x-4">
             <button id="login-tab" class="font-bold border-b-2 border-blue-500">Login</button>
             <button id="signup-tab" class="text-gray-500">Sign Up</button>
             </div>
 
-            <!-- LOGIN FORM -->
             <div id="login-form">
 
             <%= form_with url: session_path, method: :post, data: { turbo: false } do |f| %>
@@ -86,7 +83,6 @@
 
             </div>
 
-            <!-- SIGNUP FORM -->
             <div id="signup-form" class="hidden">
 
             <%= form_with model: User.new, url: users_path, method: :post, data: { turbo: false } do |f| %>

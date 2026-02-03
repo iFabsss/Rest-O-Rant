@@ -17,10 +17,8 @@ class HomeController < ApplicationController
   end
 
   def confirm
-    @reservation = Reservation.new(reservation_params.merge(user_id: current_user.id))
-
-    # Find the timeslot & table info again (needed for render :reserve)
-    @timeslot_x_table = TimeslotXTable.find_by(id: @reservation.timeslot_x_table_id)
+    @timeslot_x_table_id = reservation_params[:timeslot_x_table_id]
+    @timeslot_x_table = TimeslotXTable.find_by(id: @timeslot_x_table_id)
     @timeslot = @timeslot_x_table.timeslot
     @table = @timeslot_x_table.table
     @table_no = @table.table_no
@@ -29,28 +27,19 @@ class HomeController < ApplicationController
     @start_time = @timeslot.start_time
     @end_time = @timeslot.end_time
 
-    # Edge case: check people number
-    if @reservation.people_num != @max_people
-      flash.now[:alert] = "Must occupy exactly the max number of people!"
+    @reservation = Reservation.new(reservation_params.merge(user_id: current_user.id))
+
+    if @reservation.people_num > @max_people
+      flash.now[:alert] = "Must not exceed the max number of people!"
       render :reserve, status: :unprocessable_entity and return
     end
 
-    # Edge case: cannot reserve past timeslot
-    if @reservation.timeslot_x_table.timeslot.date < Date.current ||
-      (@reservation.timeslot_x_table.timeslot.date == Date.current &&
-        @reservation.timeslot_x_table.timeslot.start_time < Time.current)
-      flash.now[:alert] = "Cannot make reservation for past timeslot!"
-      render :reserve, status: :unprocessable_entity and return
-    end
-
-    # Edge case: at least 2 hours in advance
-    if @reservation.timeslot_x_table.timeslot.date == Date.current &&
-      (@reservation.timeslot_x_table.timeslot.start_time - Time.current) < 2.hours
+    if @timeslot.date == Date.current && (@timeslot.start_time - Time.current) < 2.hours
       flash.now[:alert] = "Reservations must be made at least 2 hours in advance!"
-      render :reserve, status: :unprocessable_entity and return
+      render :reserve, status: :unprocessable_entity
+      return
     end
 
-    # Save reservation
     if @reservation.save
       @timeslot_x_table.update(status: "reserved")
       redirect_to home_reservations_path, notice: "Reservation confirmed"
@@ -68,6 +57,8 @@ class HomeController < ApplicationController
   def cancel_reservation
     @reservation = current_user.reservations.find_by(id: params[:id])
     if @reservation
+      @timeslot_x_table = TimeslotXTable.find_by(id: @reservation.timeslot_x_table_id)
+      @timeslot_x_table.update(status: "available ")
       @reservation.destroy
       redirect_to home_reservations_path, notice: "Reservation cancelled"
     else

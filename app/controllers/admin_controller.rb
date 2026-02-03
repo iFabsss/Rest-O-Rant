@@ -132,8 +132,6 @@ class AdminController < ApplicationController
     end
   end
 
-
-  # GET /admin/tables
   def tables
     @tables = Table.order(:table_no)
   end
@@ -145,7 +143,6 @@ class AdminController < ApplicationController
     }
   end
 
-  # POST /admin/tables
   def create_table
     table = Table.new(table_params)
     if table.save
@@ -155,7 +152,6 @@ class AdminController < ApplicationController
     end
   end
 
-  # PATCH /admin/tables/:id
   def update_table
     table = Table.find(params[:id])
     if table.update(table_params)
@@ -165,7 +161,6 @@ class AdminController < ApplicationController
     end
   end
 
-  # DELETE /admin/tables/:id
   def delete_table
     table = Table.find(params[:id])
     table.destroy
